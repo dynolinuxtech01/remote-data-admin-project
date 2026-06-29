@@ -1,0 +1,221 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -3632,
+        -1936
+      ],
+      "id": "a963f98d-a75f-405d-944e-bd7432b09b78",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/home/linux/.n8n-files/dataset6.csv",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        -3424,
+        -1936
+      ],
+      "id": "03b300b8-498b-41cc-90aa-9c53e579fb44",
+      "name": "Load CSV Dataset"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -3248,
+        -1936
+      ],
+      "id": "37226254-0bb9-4807-9d8e-51c6075a6157",
+      "name": "Parse CSV Data"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "top_customer",
+          "mode": "list",
+          "cachedResultName": "top_customer"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tanggal",
+              "displayName": "tanggal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "customer",
+              "displayName": "customer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "kota",
+              "displayName": "kota",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total_belanja",
+              "displayName": "total_belanja",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3056,
+        -1936
+      ],
+      "id": "ba98dda6-25df-4612-a283-0be99994b856",
+      "name": "Update PostgreSQL",
+      "credentials": {
+        "postgres": {
+          "id": "o5bZROKSweFGOniR",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8880102851",
+        "text": "=ID: {{ $json.id }}\nTanggal: {{ $json.tanggal }}\nCustomer: {{ $json.customer }}\nKota: {{ $json.kota }}\nTotal Belanja: Rp {{ $json.total_belanja }}\nDatabase PostgreSQL berhasil diperbaharui\nTimestamp:\n{{ $now }}\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2864,
+        -1936
+      ],
+      "id": "45a11274-1d8a-4767-9f06-9642049c1821",
+      "name": "Telegram Notification",
+      "webhookId": "8ee8b010-d1ba-4175-97ec-9903f0957b2f",
+      "credentials": {
+        "telegramApi": {
+          "id": "TNkote8WpYV8kMg0",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Load CSV Dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load CSV Dataset": {
+      "main": [
+        [
+          {
+            "node": "Parse CSV Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CSV Data": {
+      "main": [
+        [
+          {
+            "node": "Update PostgreSQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update PostgreSQL": {
+      "main": [
+        [
+          {
+            "node": "Telegram Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6683bf00-b5a2-47dc-9ece-0a379e1b12cb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b9b79b32df6123207b38e3c5c9f22975c2a7db4114a35ce92b94d57103122f38"
+  },
+  "id": "4XfNbTUUZTUSpIj4",
+  "tags": []
+}
