@@ -1,0 +1,278 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -4160,
+        -2128
+      ],
+      "id": "a963f98d-a75f-405d-944e-bd7432b09b78",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/home/linux/.n8n-files/dataset10.csv",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        -3952,
+        -1920
+      ],
+      "id": "03b300b8-498b-41cc-90aa-9c53e579fb44",
+      "name": "Load CSV Dataset"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -3776,
+        -1920
+      ],
+      "id": "37226254-0bb9-4807-9d8e-51c6075a6157",
+      "name": "Parse CSV Data"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "keuangan",
+          "mode": "list",
+          "cachedResultName": "keuangan"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tanggal": "={{ $now }}",
+            "kategori": "Kurs Mata Uang",
+            "jenis": "Pemasukan",
+            "jumlah": "={{ $json.kurs_idr }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tanggal",
+              "displayName": "tanggal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "kategori",
+              "displayName": "kategori",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jenis",
+              "displayName": "jenis",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jumlah",
+              "displayName": "jumlah",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3648,
+        -2128
+      ],
+      "id": "ba98dda6-25df-4612-a283-0be99994b856",
+      "name": "Update PostgreSQL",
+      "credentials": {
+        "postgres": {
+          "id": "o5bZROKSweFGOniR",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8880102851",
+        "text": "=ID: {{ $json.id }}\nTanggal: {{ $json.tanggal }}\nKategori: {{ $json.kategori }}\nJenis: {{ $json.jenis }}\nJumlah: Rp {{ $json.jumlah }}\nDatabase PostgreSQL berhasil diperbaharui\nTimestamp:\n{{ $now }}\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3456,
+        -2128
+      ],
+      "id": "45a11274-1d8a-4767-9f06-9642049c1821",
+      "name": "Telegram Notification",
+      "webhookId": "8ee8b010-d1ba-4175-97ec-9903f0957b2f",
+      "credentials": {
+        "telegramApi": {
+          "id": "TNkote8WpYV8kMg0",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://v6.exchangerate-api.com/v6/3ef5439e1438e4aef4a8d4be/latest/USD",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -3984,
+        -2128
+      ],
+      "id": "a3556763-1f96-409d-b3f7-29f72cf3a5c4",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a0dd5caa-8556-4784-8cb6-acf84fcc5e56",
+              "name": "kurs_idr",
+              "value": "={{ $json.conversion_rates.IDR }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3824,
+        -2128
+      ],
+      "id": "a608c126-a3f8-4c0a-90c1-8d5ef57fc1a2",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load CSV Dataset": {
+      "main": [
+        [
+          {
+            "node": "Parse CSV Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CSV Data": {
+      "main": [
+        []
+      ]
+    },
+    "Update PostgreSQL": {
+      "main": [
+        [
+          {
+            "node": "Telegram Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Update PostgreSQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "178945b6-d491-449c-8355-1489a09b0cfd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b9b79b32df6123207b38e3c5c9f22975c2a7db4114a35ce92b94d57103122f38"
+  },
+  "id": "4XfNbTUUZTUSpIj4",
+  "tags": []
+}
