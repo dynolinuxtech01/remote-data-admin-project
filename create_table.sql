@@ -1,17 +1,20 @@
 ==
-=========================================
-==
---   PROJECT 6 : ANALISIS TOP CUSTOMER
---
---      Author : Purwa Candra
---      Database : PostgreSQL
---      Tools : Grafana
---
 ==========================================
 ==
+--
+--      PROJECT  : DAILY KURS MATA UANG
+--
+--      Author : PURWA CANDRA
+--      Database : PostgreSQL
+--      
 
-CREATE TABLE top_costumer
-(id SERIAL PRIMARY KEY,tanggal DATE,customer VARCHAR(100),
- kota VARCHAR(100),total_belanja NUMERIC);
+==
+===========================================
+== 
+
+-- CREATE TABLE Kurs_Harian (id SERIAL PRIMARY KEY, mata_uang VARCHAR(50) DEFAULT 'USD_TO_IDR',
+   nilai_kurs NUMERIC(15, 4), waktu_diperaharui TIMESTAMP); 
+  
+
 
 
