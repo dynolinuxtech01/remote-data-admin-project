@@ -11,7 +11,7 @@
 ==
 
 CREATE TABLE top_costumer
-(id INTEGER PRIMARY KEY,tanggal DATE,customer VARCHAR(100),
+(id SERIAL PRIMARY KEY,tanggal DATE,customer VARCHAR(100),
  kota VARCHAR(100),total_belanja NUMERIC);
 
 
